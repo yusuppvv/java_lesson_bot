@@ -270,7 +270,7 @@ public class MyBot extends TelegramLongPollingBot {
     @SneakyThrows
     private void command(String text, Long chatId, Update update) {
         switch (language) {
-            case uz -> {
+            case UZ -> {
                 if (text.matches("\\d+")) {
                     try {
                         int id = Integer.parseInt(text);
