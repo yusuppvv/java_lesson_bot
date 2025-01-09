@@ -1,5 +1,5 @@
 package Folder;
 
 public enum Language {
-    uz , ru , en
+    UZ, ru , en
 }

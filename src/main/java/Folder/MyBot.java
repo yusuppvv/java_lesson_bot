@@ -21,8 +21,6 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.time.LocalTime;
-import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -70,24 +68,24 @@ public class MyBot extends TelegramLongPollingBot {
             case LANGUAGE -> {
                 switch (text) {
                     case "\uD83C\uDDFA\uD83C\uDDFF Uzbek tili" -> {
-                        language = Language.uz;
+                        language = Language.UZ;
                         status = DONE;
                         sendMessage(chatId, "Assalomu aleykum " + update.getMessage().getChat().getUserName() + ". Bizning botimizga xush kelibsiz!");
-                        sendReplyMessage(chatId, "Botimizda faqat kino ko'rishingiz mumkin. Kinolar kod bo'yicha saqlanadi , 1 yoki 2 kabi.", sendSentMessage(chatId, "Botimizdan foydalanish instruksiyasi:"));
+                        sendReplyMessage(chatId, "Botimizda faqat Java bo'yicha video darslar ko'rishingiz mumkin. Darslar kod bo'yicha saqlanadi , 1 yoki 2 kabi.", sendSentMessage(chatId, "Botimizdan foydalanish instruksiyasi:"));
                         startUp(chatId, update);
                     }
                     case "🇷🇺 Русский язык" -> {
                         language = Language.ru;
                         status = DONE;
                         sendMessage(chatId, "Здравствуйте " + update.getMessage().getChat().getUserName() + ". Добро пожаловать в наш бот!");
-                        sendReplyMessage(chatId, "С нашим ботом вы можете только смотреть фильмы. Фильмы сохраняются по коду, например, 1 или 2.", sendSentMessage(chatId, "Инструкция по использованию нашего бота:"));
+                        sendReplyMessage(chatId, "С нашим ботом вы можете только смотреть видео уроки по Жаве. Уроки сохраняются по коду, например, 1 или 2.", sendSentMessage(chatId, "Инструкция по использованию нашего бота:"));
                         startUp(chatId, update);
                     }
                     case "\uD83C\uDDFA\uD83C\uDDF8 English language" -> {
                         language = Language.en;
                         status = DONE;
                         sendMessage(chatId, "Hello " + update.getMessage().getChat().getUserName() + ". Welcome to our bot!");
-                        sendReplyMessage(chatId, "You can only watch movies with our bot. Movies are saved by code, such as 1 or 2.", sendSentMessage(chatId, "Instruction on how to use our bot:"));
+                        sendReplyMessage(chatId, "You can only watch video lessons about Java with our bot. Lessons are saved by code, such as 1 or 2.", sendSentMessage(chatId, "Instruction on how to use our bot:"));
                         startUp(chatId, update);
                     }
                     default -> {
@@ -103,7 +101,7 @@ public class MyBot extends TelegramLongPollingBot {
     }
     @SneakyThrows
     private void startUp(Long chatId , Update update) {
-        if (language == Language.uz) {
+        if (language == Language.UZ) {
             Thread.sleep(500);
             uzbekInterface(chatId , update);
         }
@@ -250,7 +248,7 @@ public class MyBot extends TelegramLongPollingBot {
     }
     private void error(Update update , Long chatId) throws InterruptedException {
         switch (language) {
-            case uz -> {
+            case UZ -> {
                 sendReplyMessage(chatId , "Noto'g'ri komanda!" , update.getMessage().getMessageId());
                 Thread.sleep(1000);
                 sendReplyMessage(chatId, "Botimizda faqat kino ko'rishingiz mumkin. Kinolar kod bo'yicha saqlanadi , 1 yoki 2 kabi." , sendSentMessage(chatId, "Botimizdan foydalanish instruksiyasi:"));
@@ -270,6 +268,20 @@ public class MyBot extends TelegramLongPollingBot {
     @SneakyThrows
     private void command(String text, Long chatId, Update update) {
         switch (language) {
+            case ru -> {
+                if (text.matches("\\d+")) {
+                    try {
+                        int id = Integer.parseInt(text);
+                        String videoUrl = getVideoById(id);
+                        String caption = getCaption(id);
+                        sendVideo(chatId, videoUrl, caption, text, update.getMessage().getMessageId());
+                    } catch (Exception e) {
+                        sendMessage(chatId, "Видео с этим номером еще нет 😟!");
+                    }
+                } else {
+                    sendMessage(chatId, "Пожалуйста, отправьте только числовую команду, например 1 или 2.");
+                }
+            }
             case UZ -> {
                 if (text.matches("\\d+")) {
                     try {
@@ -283,20 +295,6 @@ public class MyBot extends TelegramLongPollingBot {
                 }
                 else {
                     sendMessage(chatId, "Iltimos, menga faqat raqamli xabar yuboring 1 yoki 2 kabi.");
-                }
-            }
-            case ru -> {
-                if (text.matches("\\d+")) {
-                    try {
-                        int id = Integer.parseInt(text);
-                        String videoUrl = getVideoById(id);
-                        String caption = getCaption(id);
-                        sendVideo(chatId, videoUrl, caption, text, update.getMessage().getMessageId());
-                    } catch (Exception e) {
-                        sendMessage(chatId, "Видео с этим номером еще нет 😟!");
-                    }
-                } else {
-                    sendMessage(chatId, "Пожалуйста, отправьте только числовую команду, например 1 или 2.");
                 }
             }
             case en -> {
@@ -314,18 +312,6 @@ public class MyBot extends TelegramLongPollingBot {
                     sendMessage(chatId, "Please send a numeric command only, like 1 or 2.");
                 }
             }
-        }
-    }
-
-    private void nextVideo(int id , String text , Long chatId , Update update) throws IOException {
-        if (text.equals("⏭ Keyingi darsni ko'rish")) {
-            String videoId = getVideoById(id);
-            String captin = getCaption(id);
-            sendVideo(chatId, videoId, captin, text + 1, update.getMessage().getMessageId());
-            sendReplyKeyboardMessage(chatId, "Keyingi darsni ko'rishni xohlaysizmi?", nextVideoButton());
-        } else if (text.equals("⏮ Xohlagan darsni ko'rish")) {
-            sendReplyMessage(chatId, "Xohlagan darsingizni ko'rishingiz mumkin😊", update.getMessage().getMessageId());
-            command(null, chatId, update);
         }
     }
 
@@ -373,13 +359,14 @@ public class MyBot extends TelegramLongPollingBot {
     @SneakyThrows
     private void sendVideo(Long chatId, String videoById , String caption, String text , Integer messageId) {
         switch (language) {
-            case uz -> {
+            case UZ -> {
                 SendVideo sendVideo = new SendVideo();
                 sendVideo.setChatId(chatId);
                 sendVideo.setReplyToMessageId(messageId);
                 sendVideo.setVideo(new InputFile(videoById));
                 sendVideo.setCaption("Kino kodi: " + text + "\nUning tavsifi: " + "\n" + caption);
                 sendVideo.setProtectContent(true);
+                execute(sendVideo);
             }
             case ru -> {
                 SendVideo sendVideo = new SendVideo();
