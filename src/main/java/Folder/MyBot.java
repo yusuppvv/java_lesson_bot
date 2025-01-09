@@ -465,10 +465,10 @@ public class MyBot extends TelegramLongPollingBot {
     }
     @Override
     public String getBotUsername() {
-        return "@movie_pdp_bot";
+        return "https://t.me/java_lesson_pdp_bot";
     }
     @Override
     public String getBotToken() {
-        return "7875639721:AAFY0SYrfByENqFEk8ZMxeqsXm1pTDl0BEs";
+        return "7164890679:AAHu_zJ7d6Ii4sPDp7LNKbwPfM0L1HpRmTQ";
     }
 }
