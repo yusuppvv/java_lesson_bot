@@ -36,9 +36,6 @@ public class MyBot extends TelegramLongPollingBot {
     @SneakyThrows
     @Override
     public void onUpdateReceived(Update update) {
-        LocalTime time = LocalTime.now();
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("HH:mm:ss");
-        String formattedTime = time.format(formatter);
         Message message = update.getMessage();
         Long chatId = message.getChatId();
         String text = message.getText();
@@ -49,13 +46,13 @@ public class MyBot extends TelegramLongPollingBot {
                     String fileId = update.getMessage().getVideo().getFileId();
                     String caption = update.getMessage().getCaption();
                     saveToExcel(fileId , caption);
-                    sendReplyMessage(chatId , "Movie added!" , update.getMessage().getMessageId());
+                    sendReplyMessage(chatId , "Lesson added!" , update.getMessage().getMessageId());
                 } else if (update.getMessage().getCaption() == null) {
                     String fileId = update.getMessage().getVideo().getFileId();
                     saveToExcel(fileId , null);
-                    sendReplyMessage(chatId , "Movie added!" , update.getMessage().getMessageId());
+                    sendReplyMessage(chatId , "Lesson added!" , update.getMessage().getMessageId());
                 } else {
-                    sendReplyMessage(chatId , update.getMessage().getFrom().getFirstName() + ", Menga faqat kino jo'nata olasiz." , update.getMessage().getMessageId());
+                    sendReplyMessage(chatId , update.getMessage().getFrom().getFirstName() + ", Menga faqat Dars jo'nata olasiz." , update.getMessage().getMessageId());
                 }
             }
         }
@@ -183,7 +180,7 @@ public class MyBot extends TelegramLongPollingBot {
             command(text , chatId , update);
         }
         else if (text.equals("/manual")) {
-            sendReplyMessage(chatId, "Botimizda faqat kino ko'rishingiz mumkin. Kinolar kod bo'yicha saqlanadi , 1 yoki 2 kabi." , sendSentMessage(chatId, "Botimizdan foydalanish instruksiyasi:"));
+            sendReplyMessage(chatId, "Botimizda faqat Java bo'yicha dars ko'rishingiz mumkin. Kinolar kod bo'yicha saqlanadi , 1 yoki 2 kabi." , sendSentMessage(chatId, "Botimizdan foydalanish instruksiyasi:"));
         }
         else if (text.equals("/help")) {
             sendReplyMessage(chatId , "Agar sizga bot bilan foydalanishda yordam kerak bo'lsa /manual komandasini ishlating." , update.getMessage().getMessageId());
@@ -217,8 +214,8 @@ public class MyBot extends TelegramLongPollingBot {
         rows.add(row2);
         ReplyKeyboardMarkup replyKeyboardMarkup = new ReplyKeyboardMarkup();
         replyKeyboardMarkup.setResizeKeyboard(true);
-        replyKeyboardMarkup.setOneTimeKeyboard(true);
         replyKeyboardMarkup.setKeyboard(rows);
+        replyKeyboardMarkup.setOneTimeKeyboard(true);
         return replyKeyboardMarkup;
     }
     private void sendReplyKeyboardMessage(Long chatId, String text, ReplyKeyboardMarkup keyboardMarkup) {
@@ -277,24 +274,23 @@ public class MyBot extends TelegramLongPollingBot {
                 if (text.matches("\\d+")) {
                     try {
                         int id = Integer.parseInt(text);
-                        String videoUrl = getVideoById(id - 1);
-                        String caption = getCaption(id - 1);
+                        String videoUrl = getVideoById(id);
+                        String caption = getCaption(id);
                         sendVideo(chatId, videoUrl, caption, text, update.getMessage().getMessageId());
-                        sendReplyKeyboardMessage(chatId , "Keyingi darsni ko'rishni xohlaysizmi?" , nextVideoButton());
-                        nextVideo(id , text , chatId , update);
                     } catch (Exception e) {
-                        sendMessage(chatId, "Hozircha bu raqamga tegishli video yo'q 😟!");
+                        sendMessage(chatId, "Hozircha bu raqamga tegishli dars yo'q😟!");
                     }
-                } else {
-                    sendMessage(chatId, "Iltimos, faqat raqamli buyruq yuboring, masalan 1 yoki 2.");
+                }
+                else {
+                    sendMessage(chatId, "Iltimos, menga faqat raqamli xabar yuboring 1 yoki 2 kabi.");
                 }
             }
             case ru -> {
                 if (text.matches("\\d+")) {
                     try {
                         int id = Integer.parseInt(text);
-                        String videoUrl = getVideoById(id - 1);
-                        String caption = getCaption(id - 1);
+                        String videoUrl = getVideoById(id);
+                        String caption = getCaption(id);
                         sendVideo(chatId, videoUrl, caption, text, update.getMessage().getMessageId());
                     } catch (Exception e) {
                         sendMessage(chatId, "Видео с этим номером еще нет 😟!");
@@ -307,8 +303,8 @@ public class MyBot extends TelegramLongPollingBot {
                 if (text.matches("\\d+")) {
                     try {
                         int id = Integer.parseInt(text);
-                        String videoUrl = getVideoById(id - 1);
-                        String caption = getCaption(id - 1);
+                        String videoUrl = getVideoById(id);
+                        String caption = getCaption(id);
                         sendVideo(chatId, videoUrl, caption, text, update.getMessage().getMessageId());
                     } catch (Exception e) {
                         sendMessage(chatId, "There is no video with this number yet 😟!");
