@@ -55,7 +55,7 @@ public class MyBot extends TelegramLongPollingBot {
             }
         }
         else if (update.getMessage().hasVideo() && !update.getMessage().getFrom().getId().equals(1206667836L)){
-            sendContact(chatId , sendSentMessage(chatId , update.getMessage().getFrom().getFirstName() + ", Siz menga kino jo'natish huquqiga ega emasiz. Adminga murojat qiling:") , "Azizbek" , "Yusupov" , "+998997012010");
+            sendContact(chatId , sendSentMessage(chatId , update.getMessage().getFrom().getFirstName() + ", Siz menga dars jo'natish huquqiga ega emasiz. Adminga murojat qiling:") , "Azizbek" , "Yusupov" , "+998997012010");
         }
         switch (status) {
             case START -> {
@@ -89,7 +89,6 @@ public class MyBot extends TelegramLongPollingBot {
                         startUp(chatId, update);
                     }
                     default -> {
-                        sendMessage(chatId, "Iltimos, tildan birini tanlang! 🌐");
                         selectLanguage(chatId);
                     }
                 }
@@ -150,7 +149,7 @@ public class MyBot extends TelegramLongPollingBot {
             command(text, chatId, update);
         }
         else if (text.equals("/manual")) {
-            sendReplyMessage(chatId, "You can only watch movies with our bot. Movies are saved by code, such as 1 or 2.", sendSentMessage(chatId, "Instruction on how to use our bot:"));
+            sendReplyMessage(chatId, "You can only watch Java lessons with our bot. Lessons are saved by code, such as 1 or 2.", sendSentMessage(chatId, "Instruction on how to use our bot:"));
         }
         else if (text.equals("/help")) {
             sendReplyMessage(chatId, "If you need help using the bot, use the /manual command.", update.getMessage().getMessageId());
@@ -178,7 +177,7 @@ public class MyBot extends TelegramLongPollingBot {
             command(text , chatId , update);
         }
         else if (text.equals("/manual")) {
-            sendReplyMessage(chatId, "Botimizda faqat Java bo'yicha dars ko'rishingiz mumkin. Kinolar kod bo'yicha saqlanadi , 1 yoki 2 kabi." , sendSentMessage(chatId, "Botimizdan foydalanish instruksiyasi:"));
+            sendReplyMessage(chatId, "Botimizda faqat Java bo'yicha darslar ko'rishingiz mumkin. Kinolar kod bo'yicha saqlanadi , 1 yoki 2 kabi." , sendSentMessage(chatId, "Botimizdan foydalanish instruksiyasi:"));
         }
         else if (text.equals("/help")) {
             sendReplyMessage(chatId , "Agar sizga bot bilan foydalanishda yordam kerak bo'lsa /manual komandasini ishlating." , update.getMessage().getMessageId());
@@ -251,17 +250,17 @@ public class MyBot extends TelegramLongPollingBot {
             case UZ -> {
                 sendReplyMessage(chatId , "Noto'g'ri komanda!" , update.getMessage().getMessageId());
                 Thread.sleep(1000);
-                sendReplyMessage(chatId, "Botimizda faqat kino ko'rishingiz mumkin. Kinolar kod bo'yicha saqlanadi , 1 yoki 2 kabi." , sendSentMessage(chatId, "Botimizdan foydalanish instruksiyasi:"));
+                sendReplyMessage(chatId, "Botimizda faqat Java darslar ko'rishingiz mumkin. Darslar kod bo'yicha saqlanadi , 1 yoki 2 kabi." , sendSentMessage(chatId, "Botimizdan foydalanish instruksiyasi:"));
             }
             case ru -> {
                 sendReplyMessage(chatId, "Неверная команда!", update.getMessage().getMessageId());
                 Thread.sleep(1000);
-                sendReplyMessage(chatId, "С нашим ботом вы можете только смотреть фильмы. Фильмы сохраняются по коду, например, 1 или 2.", sendSentMessage(chatId, "Инструкция по использованию нашего бота:"));
+                sendReplyMessage(chatId, "С нашим ботом вы можете только смотреть уроки по Жаве. Уроки сохраняются по коду, например, 1 или 2.", sendSentMessage(chatId, "Инструкция по использованию нашего бота:"));
             }
             case en -> {
                 sendReplyMessage(chatId, "Invalid command!", update.getMessage().getMessageId());
                 Thread.sleep(1000);
-                sendReplyMessage(chatId, "With our bot, you can only watch movies. Movies are stored by code, such as 1 or 2.", sendSentMessage(chatId, "Instructions for using our bot:"));
+                sendReplyMessage(chatId, "With our bot, you can only watch Java lessons. Lessons are stored by code, such as 1 or 2.", sendSentMessage(chatId, "Instructions for using our bot:"));
             }
         }
     }
@@ -315,37 +314,21 @@ public class MyBot extends TelegramLongPollingBot {
         }
     }
 
-    private ReplyKeyboardMarkup nextVideoButton() {
-        KeyboardButton button = new KeyboardButton("⏭ Keyingi darsni ko'rish");
-        KeyboardButton button1 = new KeyboardButton("⏮ Xohlagan darsni ko'rish");
-        KeyboardRow row1 = new KeyboardRow();
-        row1.add(button);
-        KeyboardRow row2 = new KeyboardRow();
-        row2.add(button1);
-        List<KeyboardRow> rows = new ArrayList<>();
-        rows.add(row1);
-        rows.add(row2);
-        ReplyKeyboardMarkup replyKeyboardMarkup = new ReplyKeyboardMarkup();
-        replyKeyboardMarkup.setOneTimeKeyboard(true);
-        replyKeyboardMarkup.setKeyboard(rows);
-        replyKeyboardMarkup.setResizeKeyboard(true);
-        return replyKeyboardMarkup;
-    }
     private void adminActions(Update update , Long admin , Long chatId) throws IOException {
         if (update.getMessage().hasVideo()) {
             if (update.getMessage().getCaption() != null) {
                 String fileId = update.getMessage().getVideo().getFileId();
                 String caption = update.getMessage().getCaption();
                 saveToExcel(fileId , caption);
-                sendReplyMessage(chatId , "Movie added! 🎥" , update.getMessage().getMessageId());
+                sendReplyMessage(chatId , "Lesson added! 🎥" , update.getMessage().getMessageId());
             } else  {
                 String fileId = update.getMessage().getVideo().getFileId();
                 saveToExcel(fileId , null);
-                sendReplyMessage(chatId , "Movie Added! 🎥" , update.getMessage().getMessageId());
+                sendReplyMessage(chatId , "Lesson Added! 🎥" , update.getMessage().getMessageId());
             }
         }
         else {
-            sendMessage(chatId, update.getMessage().getFrom().getFirstName() + " , Iltimos menga faqat kino yuboring!");
+            sendMessage(chatId, update.getMessage().getFrom().getFirstName() + " , Iltimos menga faqat darslik yuboring!");
         }
     }
     @SneakyThrows
@@ -364,7 +347,7 @@ public class MyBot extends TelegramLongPollingBot {
                 sendVideo.setChatId(chatId);
                 sendVideo.setReplyToMessageId(messageId);
                 sendVideo.setVideo(new InputFile(videoById));
-                sendVideo.setCaption("Kino kodi: " + text + "\nUning tavsifi: " + "\n" + caption);
+                sendVideo.setCaption("Darslik kodi: " + text + "\nUning tavsifi: " + "\n" + caption);
                 sendVideo.setProtectContent(true);
                 execute(sendVideo);
             }
@@ -374,7 +357,7 @@ public class MyBot extends TelegramLongPollingBot {
                 sendVideo.setReplyToMessageId(messageId);
                 sendVideo.setCaption(caption);
                 sendVideo.setVideo(new InputFile(videoById));
-                sendVideo.setCaption("Код фильма: " + text + "\nОписания фильма: " + "\n" + caption);
+                sendVideo.setCaption("Код урока: " + text + "\nОписания: " + "\n" + caption);
                 sendVideo.setProtectContent(true);
                 execute(sendVideo);
             }
@@ -384,7 +367,7 @@ public class MyBot extends TelegramLongPollingBot {
                 sendVideo.setReplyToMessageId(messageId);
                 sendVideo.setCaption(caption);
                 sendVideo.setVideo(new InputFile(videoById));
-                sendVideo.setCaption("Movie code: " + text + "\nDescription: " + "\n" + caption);
+                sendVideo.setCaption("Lesson code: " + text + "\nDescription: " + "\n" + caption);
                 execute(sendVideo);
             }
         }
