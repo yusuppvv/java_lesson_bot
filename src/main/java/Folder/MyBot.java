@@ -313,7 +313,6 @@ public class MyBot extends TelegramLongPollingBot {
             }
         }
     }
-
     private void adminActions(Update update , Long admin , Long chatId) throws IOException {
         if (update.getMessage().hasVideo()) {
             if (update.getMessage().getCaption() != null) {
