@@ -1,4 +1,4 @@
-package Folder;
+package com.company;
 
 import lombok.SneakyThrows;
 import org.apache.poi.ss.usermodel.Row;
@@ -24,8 +24,8 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-import static Folder.Status.DONE;
-import static Folder.Status.LANGUAGE;
+import static com.company.Status.DONE;
+import static com.company.Status.LANGUAGE;
 
 public class MyBot extends TelegramLongPollingBot {
     private static final String MOVIES_XLSX = "Movies.xlsx";
