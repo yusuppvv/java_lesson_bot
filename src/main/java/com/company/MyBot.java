@@ -31,7 +31,6 @@ public class MyBot extends TelegramLongPollingBot {
     private static final String MOVIES_XLSX = "Movies.xlsx";
     private static Status status = Status.START; // Global status
     private static Language language;
-    @SneakyThrows
     @Override
     public void onUpdateReceived(Update update) {
         Message message = update.getMessage();
@@ -43,11 +42,19 @@ public class MyBot extends TelegramLongPollingBot {
                 if (update.getMessage().getCaption() != null) {
                     String fileId = update.getMessage().getVideo().getFileId();
                     String caption = update.getMessage().getCaption();
-                    saveToExcel(fileId , caption);
+                    try {
+                        saveToExcel(fileId , caption);
+                    } catch (IOException e) {
+                        throw new RuntimeException(e);
+                    }
                     sendReplyMessage(chatId , "Lesson added!" , update.getMessage().getMessageId());
                 } else if (update.getMessage().getCaption() == null) {
                     String fileId = update.getMessage().getVideo().getFileId();
-                    saveToExcel(fileId , null);
+                    try {
+                        saveToExcel(fileId , null);
+                    } catch (IOException e) {
+                        throw new RuntimeException(e);
+                    }
                     sendReplyMessage(chatId , "Lesson added!" , update.getMessage().getMessageId());
                 } else {
                     sendReplyMessage(chatId , update.getMessage().getFrom().getFirstName() + ", Menga faqat Dars jo'nata olasiz." , update.getMessage().getMessageId());
@@ -98,22 +105,32 @@ public class MyBot extends TelegramLongPollingBot {
             }
         }
     }
-    @SneakyThrows
     private void startUp(Long chatId , Update update) {
         if (language == Language.UZ) {
-            Thread.sleep(500);
-            uzbekInterface(chatId , update);
+            try {
+                Thread.sleep(500);
+                uzbekInterface(chatId , update);
+            } catch (Exception e) {
+                throw new RuntimeException();
+            }
         }
         if (language == Language.ru) {
-            Thread.sleep(500);
-            russianInterface(chatId , update);
+            try {
+                Thread.sleep(500);
+                russianInterface(chatId, update);
+            } catch (Exception e) {
+                throw new RuntimeException();
+            }
         }
         if (language == Language.en) {
-            Thread.sleep(500);
-            englishInterface(chatId , update);
+            try {
+                Thread.sleep(500);
+                englishInterface(chatId, update);
+            } catch (Exception e) {
+                throw new RuntimeException();
+            }
         }
     }
-    @SneakyThrows
     private void russianInterface(Long chatId, Update update) throws IOException {
         String text = update.getMessage().getText();
         Long user = update.getMessage().getFrom().getId();
@@ -135,15 +152,22 @@ public class MyBot extends TelegramLongPollingBot {
             status = LANGUAGE;
         }
         else {
-            error(update , chatId);
+            try {
+                error(update , chatId);
+            } catch (Exception e) {
+                throw new RuntimeException();
+            }
         }
     }
-    @SneakyThrows
     private void englishInterface(Long chatId, Update update) {
         String text = update.getMessage().getText();
         Long user = update.getMessage().getFrom().getId();
         if (update.hasMessage() && update.getMessage().getChat().getId().equals(-1002486407181L)) {
-            adminActions(update, user, chatId);
+            try {
+                adminActions(update, user, chatId);
+            } catch (Exception e) {
+                throw new RuntimeException();
+            }
         }
         else if (text.length() < 3) {
             command(text, chatId, update);
@@ -163,10 +187,13 @@ public class MyBot extends TelegramLongPollingBot {
             status = LANGUAGE;
         }
         else {
-            error(update , chatId);
+            try {
+                error(update , chatId);
+            } catch (InterruptedException e) {
+                throw new RuntimeException(e);
+            }
         }
     }
-    @SneakyThrows
     private void uzbekInterface(Long chatId , Update update) throws IOException {
         String text = update.getMessage().getText();
         Long user = update.getMessage().getFrom().getId();
@@ -191,7 +218,11 @@ public class MyBot extends TelegramLongPollingBot {
             status = LANGUAGE;
         }
         else {
-            error(update , chatId);
+            try {
+                error(update , chatId);
+            } catch (InterruptedException e) {
+                throw new RuntimeException(e);
+            }
         }
     }
     private void selectLanguage(Long chatId) {
@@ -227,15 +258,17 @@ public class MyBot extends TelegramLongPollingBot {
             e.printStackTrace();
         }
     }
-    @SneakyThrows
     private Integer sendSentMessage(Long user, String s) {
         SendMessage sendMessage = new SendMessage();
         sendMessage.setChatId(user);
         sendMessage.setText(s);
-        Message execute = execute(sendMessage);
-        return execute.getMessageId();
+        try {
+            Message execute = execute(sendMessage);
+            return execute.getMessageId();
+        } catch (TelegramApiException e) {
+            throw new RuntimeException(e);
+        }
     }
-    @SneakyThrows
     private void sendContact(Long chatId, Integer messageId, String firstName, String lastName, String number) {
         SendContact sendContact = new SendContact();
         sendContact.setChatId(chatId);
@@ -243,7 +276,11 @@ public class MyBot extends TelegramLongPollingBot {
         sendContact.setFirstName(firstName);
         sendContact.setLastName(lastName);
         sendContact.setPhoneNumber(number);
-        execute(sendContact);
+        try {
+            execute(sendContact);
+        } catch (TelegramApiException e) {
+            throw new RuntimeException(e);
+        }
     }
     private void error(Update update , Long chatId) throws InterruptedException {
         switch (language) {
@@ -264,7 +301,6 @@ public class MyBot extends TelegramLongPollingBot {
             }
         }
     }
-    @SneakyThrows
     private void command(String text, Long chatId, Update update) {
         switch (language) {
             case ru -> {
@@ -330,15 +366,17 @@ public class MyBot extends TelegramLongPollingBot {
             sendMessage(chatId, update.getMessage().getFrom().getFirstName() + " , Iltimos menga faqat darslik yuboring!");
         }
     }
-    @SneakyThrows
     private void sendReplyMessage(Long chatId, String s, Integer messageId) {
         SendMessage sendMessage = new SendMessage();
         sendMessage.setReplyToMessageId(messageId);
         sendMessage.setChatId(chatId);
         sendMessage.setText(s);
-        execute(sendMessage);
+        try {
+            execute(sendMessage);
+        } catch (TelegramApiException e) {
+            throw new RuntimeException();
+        }
     }
-    @SneakyThrows
     private void sendVideo(Long chatId, String videoById , String caption, String text , Integer messageId) {
         switch (language) {
             case UZ -> {
@@ -348,7 +386,11 @@ public class MyBot extends TelegramLongPollingBot {
                 sendVideo.setVideo(new InputFile(videoById));
                 sendVideo.setCaption("Darslik kodi: " + text + "\nUning tavsifi: " + "\n" + caption);
                 sendVideo.setProtectContent(true);
-                execute(sendVideo);
+                try {
+                    execute(sendVideo);
+                } catch (TelegramApiException e) {
+                    throw new RuntimeException(e);
+                }
             }
             case ru -> {
                 SendVideo sendVideo = new SendVideo();
@@ -358,7 +400,11 @@ public class MyBot extends TelegramLongPollingBot {
                 sendVideo.setVideo(new InputFile(videoById));
                 sendVideo.setCaption("Код урока: " + text + "\nОписания: " + "\n" + caption);
                 sendVideo.setProtectContent(true);
-                execute(sendVideo);
+                try {
+                    execute(sendVideo);
+                } catch (TelegramApiException e) {
+                    throw new RuntimeException(e);
+                }
             }
             case en -> {
                 SendVideo sendVideo = new SendVideo();
@@ -367,7 +413,11 @@ public class MyBot extends TelegramLongPollingBot {
                 sendVideo.setCaption(caption);
                 sendVideo.setVideo(new InputFile(videoById));
                 sendVideo.setCaption("Lesson code: " + text + "\nDescription: " + "\n" + caption);
-                execute(sendVideo);
+                try {
+                    execute(sendVideo);
+                } catch (TelegramApiException e) {
+                    throw new RuntimeException(e);
+                }
             }
         }
     }
@@ -393,12 +443,15 @@ public class MyBot extends TelegramLongPollingBot {
         Row row = sheet.getRow(ID);
         return row.getCell(2).getStringCellValue();
     }
-    @SneakyThrows
     private void sendMessage(Long chatId, String text) {
         SendMessage sendMessage = new SendMessage();
         sendMessage.setChatId(chatId);
         sendMessage.setText(text);
-        execute(sendMessage);
+        try {
+            execute(sendMessage);
+        } catch (TelegramApiException e) {
+            throw new RuntimeException(e);
+        }
     }
     private void saveToExcel(String id , String caption) throws IOException {
         Workbook workbook;
