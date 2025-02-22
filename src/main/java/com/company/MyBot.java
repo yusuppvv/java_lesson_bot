@@ -28,6 +28,8 @@ import static com.company.Status.DONE;
 import static com.company.Status.LANGUAGE;
 
 public class MyBot extends TelegramLongPollingBot {
+    private static final String BOT_USERNAME = "@java_lesson_pdp_bot";
+    private static final String BOT_TOKEN = "7164890679:AAGtCwgJBKXuZYav2eNb81cYITqHzlEuQGs";
     private static final String MOVIES_XLSX = "Movies.xlsx";
     private static Status status = Status.START; // Global status
     private static Language language;
@@ -483,10 +485,10 @@ public class MyBot extends TelegramLongPollingBot {
     }
     @Override
     public String getBotUsername() {
-        return "https://t.me/java_lesson_pdp_bot";
+        return BOT_USERNAME;
     }
     @Override
     public String getBotToken() {
-        return "7164890679:AAHu_zJ7d6Ii4sPDp7LNKbwPfM0L1HpRmTQ";
+        return BOT_TOKEN;
     }
 }
